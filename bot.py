@@ -1,28 +1,25 @@
+# Import python modules
 import discord
 import logging
+import json
 from time import time
+from discord.ext import commands
 
 
-def performance(fn):
-    '''
-    Decorator function to measure the time performance of a function
-    '''
-    def wrapper(*args, **kwargs):
-        # Get start time
-        start_time = time()
-        # Do the functions
-        result = fn(*args, **kwargs)
-        # Get end time
-        end_time = time()
-        # Calculate elapsed time
-        total_time = (end_time-start_time)*1000
-        # Print the result to stdout
-        # EX: "function() took 112 ms to execute"
-        print(f'{fn.__name__}() took {total_time:.2f} ms to execute')
-        # Return the result from the original functions
-        return result
-    # Exit decorator
-    return wrapper
+'''
+*******************************************************************************
+
+Overview: This is the bot's core infrastructure; it will create the basic 
+instance of the Discord bot which loads extensions to implement cogs. 
+Extensions are hot-swappable portions of code conducive to development.
+Cogs are the classes that contain the added commands, event listeners, and 
+attributes of these extensions.
+
+Authors: Joe Miller (@thatnerdjoe)
+Version: 0.1
+Date: 03-20-2021
+*******************************************************************************
+'''
 
 
 def constant(fn):
@@ -44,20 +41,50 @@ def constant(fn):
 
 class _Const(object):
     '''
-    This class is merely a construct to hold constant values.
+    This class is merely a construct to enforce constant values.
     Each value is represented by a function holding only a return value.
-    To get the value, call it with (assuming CONST is an object of _Const): 
-    >>> CONST.SAMPLE 
+    To get the value, call it with (assuming CONST is an object of _Const):
+    >>> CONST.SAMPLE
     '''
-    # Holds location of the bot's config file
+    # Returns file descriptor of the opened config.json
     @constant
     def CONFIG():
-        return './config'
+        config_file = './config.json'
+        try:
+            with open(config_file, 'r') as file:
+                return json.load(file)
+        except Exception as e:
+            print(f'ERROR: could not open find config file {config_file}')
+            exit()
 
     # Sample constant, returns a silly value for testing
-    @constant
+    @ constant
     def SAMPLE():
         return 0xCABB005E
 
 
-client = discord.Client()
+# Instantiate CONSTANTS object
+CONST = _Const()
+
+# Instantiate the bot to use commands prefix from the config file
+bot = commands.Bot(
+    command_prefix=CONST.CONFIG['prefix'], case_insensitive=True)
+
+# Remove 'help' command for a custom one
+bot.remove_command('help')
+
+# Load the bot's extensions here
+bot.load_extension("cogs.botty")
+
+
+@bot.event
+async def on_ready():
+    '''
+    on_ready:   Wait for connection to Discord. Set up of the bot's functions.
+    '''
+    # Print connection status
+    print(f'Logged on as {bot.user}')
+
+
+# Import the API token
+bot.run(CONST.CONFIG['token'])
