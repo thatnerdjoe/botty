@@ -63,13 +63,10 @@ class _Const(object):
         return 0xCABB005E
 
 
-# Instantiate client object
-client = discord.Client()
-
 # Instantiate CONSTANTS object
 CONST = _Const()
 
-# specify bot command prefixes using value in the config.json file
+# Instantiate the bot to use commands prefix from the config file
 bot = commands.Bot(
     command_prefix=CONST.CONFIG['prefix'], case_insensitive=True)
 
@@ -83,11 +80,10 @@ bot.load_extension("cogs.botty")
 @bot.event
 async def on_ready():
     '''
-    on_ready:   Wait for connection to Discord. Set up the bot's functions.
-                asd
+    on_ready:   Wait for connection to Discord. Set up of the bot's functions.
     '''
     # Print connection status
-    print('Logged on as {0.user}'.format(bot))
+    print(f'Logged on as {bot.user}')
 
 
 # Import the API token
