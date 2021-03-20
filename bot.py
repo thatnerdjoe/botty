@@ -3,30 +3,23 @@ import discord
 import logging
 import json
 from time import time
+from discord.ext import commands
 
-# Import bascobot function modules
 
+'''
+*******************************************************************************
 
-def performance(fn):
-    '''
-    Decorator function to measure the time performance of a function
-    '''
-    def wrapper(*args, **kwargs):
-        # Get start time
-        start_time = time()
-        # Do the functions
-        result = fn(*args, **kwargs)
-        # Get end time
-        end_time = time()
-        # Calculate elapsed time
-        total_time = (end_time-start_time)*1000
-        # Print the result to stdout
-        # EX: "function() took 112 ms to execute"
-        print(f'{fn.__name__}() took {total_time:.2f} ms to execute')
-        # Return the result from the original functions
-        return result
-    # Exit decorator
-    return wrapper
+Overview: This is the bot's core infrastructure; it will create the basic 
+instance of the Discord bot which loads extensions to implement cogs. 
+Extensions are hot-swappable portions of code conducive to development.
+Cogs are the classes that contain the added commands, event listeners, and 
+attributes of these extensions.
+
+Authors: Joe Miller (@thatnerdjoe)
+Version: 0.1
+Date: 03-20-2021
+*******************************************************************************
+'''
 
 
 def constant(fn):
@@ -53,13 +46,13 @@ class _Const(object):
     To get the value, call it with (assuming CONST is an object of _Const):
     >>> CONST.SAMPLE
     '''
-    # Holds location of the bot's config file
+    # Returns file descriptor of the opened config.json
     @constant
     def CONFIG():
         config_file = './config.json'
         try:
-            data = json.load(open(config_file, 'r'))
-            return data
+            with open(config_file, 'r') as file:
+                return json.load(file)
         except Exception as e:
             print(f'ERROR: could not open find config file {config_file}')
             exit()
@@ -77,24 +70,25 @@ client = discord.Client()
 CONST = _Const()
 
 # specify bot command prefixes using value in the config.json file
-bot_command = bot.command(command_prefix=CONST.CONFIG['prefix']
+bot = commands.Bot(
+    command_prefix=CONST.CONFIG['prefix'], case_insensitive=True)
+
+# Remove 'help' command for a custom one
+bot.remove_command('help')
+
+# Load the bot's extensions here
+bot.load_extension("cogs.botty")
 
 
-@ client.event
+@bot.event
 async def on_ready():
-    print('Logged on as {0.user}'.format(client))
-
-
-@ client.event
-async def on_message(msg):
-    # Do nothing if message is from this box
-    if msg.author == client.user:
-        return
-
-    # If a server message has the command prefix, do a task
-    if message.content.startswith(bot_command):
-        await message.channel.send()
+    '''
+    on_ready:   Wait for connection to Discord. Set up the bot's functions.
+                asd
+    '''
+    # Print connection status
+    print('Logged on as {0.user}'.format(bot))
 
 
 # Import the API token
-client.run(CONST.CONFIG['token'])
+bot.run(CONST.CONFIG['token'])

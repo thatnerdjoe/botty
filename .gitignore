@@ -14,19 +14,20 @@
 ###
 # Ignore all
 *.*
-# Ignore private token-containing config.json
-**/config.json
 # Unignore .gitignore
 !.gitignore
 # Unignore Python files
 !**/*.py
 # Unignore JSON files
 !**/*.json
+# Ignore private token-containing config.json
+**/config.json
 
 
 ###
 # Ignore these specific directories
 ###
+# Pyvenv created directories
 lib/
 bin/
 lib64/
