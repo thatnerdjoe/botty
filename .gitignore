@@ -1,0 +1,31 @@
+###
+# These steps ignore any files without extensions
+###
+# Ignore all
+*
+# Unignore files without extensions
+!*.*
+# Unignore all dirs
+!**/
+
+
+###
+# These will specify a specfic file type
+###
+# Ignore all
+*.*
+# Unignore .gitignore
+!.gitignore
+# Unignore Python files
+!**/*.py
+# Unignore JSON files
+!**/*.json
+
+
+###
+# Ignore these specific directories
+###
+lib/
+bin/
+lib64/
+include/
