@@ -30,10 +30,11 @@ class Botty(commands.Cog):
 
     @commands.guild_only()
     @commands.command()
-    async def addrole(self, ctx, role=None):
+    async def addrole(self, ctx, *, role=None):
         '''
         addrole: Used to add guild roles to a user 
         '''
+
         # Prompt user to specify a role if none provided
         if role == None:
             await ctx.send(f'Please specify a role.')
@@ -66,7 +67,7 @@ class Botty(commands.Cog):
 
     @commands.guild_only()
     @commands.command()
-    async def removerole(self, ctx, role=None):
+    async def removerole(self, ctx, *, role=None):
         '''
         removerole: Used to remove guild roles from a user 
         '''
