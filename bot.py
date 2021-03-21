@@ -1,9 +1,9 @@
-# Import python modules
-import discord
-import logging
-import json
-from time import time
-from discord.ext import commands
+# Module Imports
+import discord                      # DISCORD:  Discord API wrapper
+from discord.ext import commands    # COMMANDS:
+import logging                      # LOGGING:  For creating log files
+import json                         # JSON:     Handles JSON files
+from time import time               # TIME:     Used to get time/performance
 
 
 '''

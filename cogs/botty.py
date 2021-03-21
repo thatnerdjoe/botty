@@ -36,28 +36,70 @@ class Botty(commands.Cog):
         '''
         # Prompt user to specify a role if none provided
         if role == None:
-            await ctx.send(f'Please specify a role')
-            return
+            await ctx.send(f'Please specify a role.')
 
-        # Check if the specified roll exists
-        for eachRole in ctx.guild.roles:
-            if role == eachRole.name:
-                role = eachRole
-                break
-
-        if type(role) != str:
-            try:
-                await ctx.author.add_roles(role)
-                await ctx.send(f'{ctx.author}, successfully added role {role.name}')
-            except Exception as e:
-                if type(e).__name__ == "Forbidden":
-                    await ctx.send('Sorry, I do not have sufficient privileges')
-                else:
-                    await ctx.send(e)
-            return
+        # Check provided role
         else:
-            await ctx.send(f'Could not find role "{role}"')
+            # Check if the specified roll exists in the guild
+            for eachRole in ctx.guild.roles:
+                if role == eachRole.name:
+                    role = eachRole
+                    break
+
+            # Check if `role` has been set to an object
+            if type(role) != str:
+                # Try to add the specified role to a user
+                try:
+                    await ctx.author.add_roles(role)
+                    await ctx.send(f'{ctx.author.mention}, successfully added role {role.name}.')
+                # Send message to Discord if an exception is raised
+                except Exception as e:
+                    # Insufficient privileges message
+                    if type(e).__name__ == "Forbidden":
+                        await ctx.send('Sorry, I do not have sufficient privileges to add roles.')
+                    # HTTP Error message
+                    else:
+                        await ctx.send(e)
+            # If role does not exist, prompt user in Discord.
+            else:
+                await ctx.send(f'Could not find role "{role}".')
+
+    @commands.guild_only()
+    @commands.command()
+    async def removerole(self, ctx, role=None):
+        '''
+        removerole: Used to remove guild roles from a user 
+        '''
+        # Prompt user to specify a role if none provided
+        if role == None:
+            await ctx.send(f'Please specify a role.')
             return
+
+        # Check provided role
+        else:
+            # Check if the specified roll exists for the member
+            for eachRole in ctx.author.roles:
+                if role == eachRole.name:
+                    role = eachRole
+                    break
+
+            # Check if `role` has been set to an object
+            if type(role) != str:
+                # Try to remove the specified role from the user
+                try:
+                    await ctx.author.remove_roles(role)
+                    await ctx.send(f'{ctx.author.mention}, successfully removed role {role.name}.')
+                # Send message to Discord if an exception is raised
+                except Exception as e:
+                    # Insufficient privileges message
+                    if type(e).__name__ == "Forbidden":
+                        await ctx.send('Sorry, I do not have sufficient privileges to remove roles.')
+                    # HTTP Error message
+                    else:
+                        await ctx.send(e)
+            # If role does not exist, prompt user in Discord.
+            else:
+                await ctx.send(f'Could not find role "{role}".')
 
 
 def setup(bot):
