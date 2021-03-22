@@ -20,8 +20,6 @@
 !**/*.py
 # Unignore JSON files
 !**/*.json
-# Ignore private token-containing config.json
-**/config.json
 
 
 ###
