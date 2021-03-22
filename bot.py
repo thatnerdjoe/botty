@@ -6,7 +6,7 @@ from time import time
 
 # Import python modules
 import discord
-from discord.ext import commands
+from discord.ext import commands, menus
 
 
 """
@@ -68,7 +68,12 @@ bot.config = config
 bot.remove_command('help')
 
 # Load the bot's extensions here
-bot.load_extension("cogs.botty")
+exts = [
+    'cogs.botty',
+    'cogs.help'
+]
+for ext in exts:
+    bot.load_extension(ext)
 
 
 @bot.event
@@ -83,6 +88,15 @@ async def on_ready():
     """
     # Print connection confirmation
     print(f'Logged in as {bot.user} and connected to Discord! (ID: {bot.user.id})')
+
+    # Set the playing status of the bot to show users how to use the help command.
+    await bot.change_presence(activity=discord.Game(name=f'{bot.config["prefix"]}help'))
+
+    # An alternative version of the playing status to show that the bot it "Watching" instead.
+    """
+    activity = discord.Activity(name=f'{len(bot.guilds)} servers.', type=discord.ActivityType.watching)
+    await client.change_presence(activity=activity)
+    """
 
 
 # Import the API token
