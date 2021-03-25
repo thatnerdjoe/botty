@@ -20,6 +20,8 @@
 !**/*.py
 # Unignore JSON files
 !**/*.json
+# Unignore pipfile
+!requirements.txt
 
 
 ###
