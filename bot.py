@@ -9,6 +9,9 @@ from time import time
 import discord
 from discord.ext import commands, menus
 
+# Import local files
+from resources.utils import Utils
+
 
 """
 *******************************************************************************
@@ -84,6 +87,8 @@ bot.config = config
 
 # Remove 'help' command for a custom one
 bot.remove_command('help')
+
+bot.utils = Utils(config)
 
 # Load the bot's extensions here
 exts = [

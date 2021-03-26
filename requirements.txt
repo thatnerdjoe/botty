@@ -2,9 +2,10 @@ aiohttp==3.7.4.post0
 async-timeout==3.0.1
 attrs==20.3.0
 chardet==4.0.0
+colorama==0.4.4
+discord-ext-menus @ git+git://github.com/Rapptz/discord-ext-menus@4429b564fd8f031deaccd60caa5be7320e248816
 discord.py==1.6.0
 idna==3.1
 multidict==5.1.0
 typing-extensions==3.7.4.3
 yarl==1.6.3
-git+git://github.com/Rapptz/discord-ext-menus@4429b56#egg=discord.ext.menus
