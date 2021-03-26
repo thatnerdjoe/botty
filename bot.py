@@ -10,6 +10,7 @@ import discord
 from discord.ext import commands, menus
 
 # Import local files
+from resources.customcontext import CustomBot
 from resources.utils import Utils
 
 
@@ -78,7 +79,7 @@ def get_prefix(bot, message):
 
 
 # Instantiate the bot to use commands prefix from the config file
-bot = commands.Bot(
+bot = CustomBot(
     command_prefix=get_prefix, case_insensitive=True)
 
 # Save the loaded config to the bot instance, so that it
@@ -93,6 +94,7 @@ bot.utils = Utils(config)
 # Load the bot's extensions here
 exts = [
     'cogs.botty',
+    'cogs.errors',
     'cogs.help'
 ]
 for ext in exts:
@@ -110,7 +112,9 @@ async def on_ready():
         relied on as a setup tool unless necessary. It is primarily used in logging purposes.
     """
     # Print connection confirmation
-    print(f'Logged in as {bot.user} and connected to Discord! (ID: {bot.user.id})')
+    print(f'{bot.utils.OK} {bot.utils.time_log()} '
+          f'Logged in as {bot.user} and connected to Discord! '
+          f'(ID: {bot.user.id})')
 
     # Set the playing status of the bot to show users how to use the help command.
     await bot.change_presence(activity=discord.Game(name=f'{bot.config["prefix"]}help'))
@@ -164,13 +168,9 @@ class Internal(commands.Cog, name="Internal"):
 
         # Check if the prefix matches the already in use one.
         if self.bot.config['prefix'] == prefix:
-            embed = discord.Embed(
+            embed = self.bot.utils.get_embed(
                 title="Prefix Already in Use",
-                description=f"The prefix {prefix} is already being used by the bot."
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+                desc=f"The prefix {prefix} is already being used by the bot."
             )
             return await ctx.send(embed=embed)
 
@@ -181,25 +181,21 @@ class Internal(commands.Cog, name="Internal"):
         with open('./config.json', 'r') as file:
             conf = json.load(file)
 
-        embed = discord.Embed(
-            title=f"Updated {self.bot.user.name} Prefix"
-        )
-        embed.add_field(
-            name="Old Prefix",
-            value=bot.config['prefix'],
-            inline=True
-        )
-        embed.add_field(
-            name="New Prefix",
-            value=prefix,
-            inline=True
-        )
-        embed.set_footer(
-            text=self.bot.config['footer']['text'],
-            icon_url=self.bot.config['footer']['icon_url']
+        embed = self.bot.utils.get_embed(
+            title=f"Updated {self.bot.user.name} Prefix",
+            fields=[
+                {
+                    "name": "Old Prefix",
+                    "value": self.bot.config['prefix']
+                },
+                {
+                    "name": "New Prefix",
+                    "value": prefix
+                }
+            ]
         )
 
-        bot.config['prefix'] = prefix
+        self.bot.config['prefix'] = prefix
         conf['prefix'] = prefix
         with open('./config.json', 'w') as file:
             file.write(json.dumps(conf, indent=2))
@@ -239,50 +235,29 @@ class Internal(commands.Cog, name="Internal"):
             # Try to load the extension
             self.bot.load_extension('cogs.' + cog_name)
 
-            embed = discord.Embed(
-                title=f"{cog_name} Cog Loaded",
-                description="The cog has been loaded successfully.",
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"{cog_name.capitalize()} Cog Loaded",
+                desc="The cog has been loaded successfully.",
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
         except commands.ExtensionAlreadyLoaded as e:
             # If the extension is already loaded, handle the error as such.
-            embed = discord.Embed(
-                title=f"{cog_name} Cog Already Loaded",
-                description="The cog you attempted to load was already loaded into the system.",
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"{cog_name.capitalize()} Cog Already Loaded",
+                desc="The cog you attempted to load was already loaded into the system.",
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
         except Exception as e:
             # Handle any other error that may occur (includes SyntaxError when loading an extension, etc.)
-            embed = discord.Embed(
-                title=f"Failed to Load {cog_name}",
-                description=str(e),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"Failed to Load {cog_name.capitalize()}",
+                desc=str(e),
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
 
@@ -302,50 +277,29 @@ class Internal(commands.Cog, name="Internal"):
             # Try to remove the extension as provided in the command execution
             self.bot.unload_extension('cogs.' + cog_name)
 
-            embed = discord.Embed(
-                title=f"{cog_name} Cog Unloaded",
-                description="The cog has been unloaded successfully.",
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"{cog_name.capitalize()} Cog Unloaded",
+                desc="The cog has been unloaded successfully.",
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
         except commands.ExtensionNotLoaded as e:
             # If the extension is not found, handle the error as such.
-            embed = discord.Embed(
-                title=f"{cog_name} Cog Not Found",
-                description="The cog you attempted to load was not found in the system.",
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"{cog_name.capitalize()} Cog Not Found",
+                desc="The cog you attempted to load was not found in the system.",
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
         except Exception as e:
             # Handle any other error that may occur
-            embed = discord.Embed(
-                title=f"Failed to Unload {cog_name}",
-                description=str(e),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"Failed to Unload {cog_name.capitalize()}",
+                desc=str(e),
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
 
@@ -365,34 +319,20 @@ class Internal(commands.Cog, name="Internal"):
             # Try to reload the extension as provided in the command execution
             self.bot.reload_extension('cogs.' + cog_name)
 
-            embed = discord.Embed(
-                title=f"{cog_name} Cog Reloaded",
-                description="The cog has been reloaded successfully.",
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"{cog_name.capitalize()} Cog Reloaded",
+                desc="The cog has been reloaded successfully.",
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
         except Exception as e:
             # Handle any other error that may occur
-            embed = discord.Embed(
-                title=f"Failed to Reload {cog_name}",
-                description=str(e),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_author(
-                name=ctx.author.name,
-                icon_url=ctx.author.avatar_url
-            )
-            embed.set_footer(
-                text=self.bot.config['footer']['text'],
-                icon_url=self.bot.config['footer']['icon_url']
+            embed = self.bot.utils.get_embed(
+                title=f"Failed to Reload {cog_name.capitalize()}",
+                desc=str(e),
+                ts=True,
+                author=ctx.author
             )
             await ctx.send(embed=embed)
 
@@ -402,7 +342,7 @@ bot.add_cog(Internal(bot))
 
 # Run the bot with the API token pulled from the environment variable
 try:
-    bot.run(bot.config['token'], bot = True, reconnect = True)
+    bot.run(bot.config['token'], bot=True, reconnect=True)
 except discord.LoginFailure:
     print(f"Invalid {ENV_TOKEN} variable: {bot.config['token']}")
     input("Press enter to continue...")
