@@ -27,11 +27,15 @@ Date: 03-25-2021
 class Utils:
     # Constants to be used in logging to the console.
     OK = f"{Fore.GREEN}[OK]{Fore.RESET}  "
-    WARN = f"{Fore.YELLOW}[WARN]{Fore.reset}"
-    ERR = f"{Fore.RED}[ERR]{Fore.reset} "
+    WARN = f"{Fore.YELLOW}[WARN]{Fore.RESET}"
+    ERR = f"{Fore.RED}[ERR]{Fore.RESET} "
 
     def __init__(self, config):
-        self.embed_color = config['embed']['color']
+        self.embed_color = discord.Color.from_rgb(
+            r=config['embed']['color']['r'],
+            g=config['embed']['color']['g'],
+            b=config['embed']['color']['b']
+        )
         self.footer = config['embed']['footer']['text']
         self.footer_icon = config['embed']['footer']['icon_url']
 

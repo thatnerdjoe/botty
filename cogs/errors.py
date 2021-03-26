@@ -21,10 +21,10 @@ Date: 03-25-2021
 class Errors(commands.Cog, name="Error Handler"):
     def __init__(self, bot):
         self.bot = bot
-        print(f"Loaded Error Cog.")
+        print(f"{self.bot.utils.OK} {self.bot.utils.time_log()} Loaded Error Cog.")
 
     def cog_unload(self):
-        print(f"Unloaded Error Cog.")
+        print(f"{self.bot.utils.OK} {self.bot.utils.time_log()} Unloaded Error Cog.")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -131,7 +131,7 @@ class Errors(commands.Cog, name="Error Handler"):
             )
             await ctx.send(embed=embed)
 
-    @commands.Cog.Listener()
+    @commands.Cog.listener()
     async def on_error(self, error):
         """
         The global error handler that catches most exceptions that can occur during bot execution.
