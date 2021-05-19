@@ -1,10 +1,10 @@
-FROM python:3
+FROM python:3.8
 
 
 RUN pip install pipenv
 
 ENV BASCOBOT /opt/bascobot
-ENV BASCOBOTTOKEN Nzk4NDM2Mjc2MzQ0NDU1MTk5.X_0_ug.deBrZIqOVNvDHQikqEOk-rmrMn8 
+ENV BASCOBOTTOKEN Nzk4NDM2Mjc2MzQ0NDU1MTk5.X_0_ug.nql6nhLy7TeFSh7DNjqCvU1rtyg
 
 WORKDIR ${BASCOBOT}
 
@@ -13,4 +13,6 @@ COPY . ${BASCOBOT}
 
 # install dependencies
 RUN pipenv install --system --deploy
-RUN pipenv run python ./bot.py
+
+# run program
+CMD ["python", "./bot.py", "&"]
