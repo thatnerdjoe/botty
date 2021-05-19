@@ -20,7 +20,7 @@ Cogs are the classes that contain the added commands, event listeners, and
 attributes of these extensions.
 
 Authors: Joe Miller (@thatnerdjoe), Houghton Mayfield (@Heroicos_HM)
-Version: 0.2
+Version: 0.2.1
 Date: 03-21-2021
 *******************************************************************************
 """
@@ -38,7 +38,7 @@ class Const(object):
     # Returns file descriptor of the opened config.json
     @classmethod
     def CONFIG(self):
-        config_file = './config.json'
+        config_file = os.path.abspath("./config.json")
         try:
             with open(config_file, 'r') as file:
                 config = json.load(file)
@@ -46,12 +46,12 @@ class Const(object):
             config['token'] = os.getenv(ENV_TOKEN)
             if config['token'] is None:
                 raise EnvironmentError(
-                    f'Missing bot token, please set the \'{ENV_TOKEN}\' environment variable.')
+                    f'Missing bot token, please set the "{ENV_TOKEN}" environment variable.')
 
             return config
-        except Exception as e:
+        except FileNotFoundError as e:
             raise Exception(
-                f'ERROR: could not open find config file {config_file}')
+                f'ERROR: could not open find config file "{config_file}"')
 
     # Sample constant, returns a silly value for testing
     @classmethod
@@ -120,10 +120,12 @@ async def on_ready():
     await client.change_presence(activity=activity)
     """
 
+
 class Internal(commands.Cog, name="Internal"):
     """
     Commands used in the core infrastructure of the bot.
     """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -143,7 +145,8 @@ class Internal(commands.Cog, name="Internal"):
         :param ctx: The context of the command execution.
         """
 
-        raise discord.ext.commands.CommandInvokeError('Restart command not implemented.')
+        raise discord.ext.commands.CommandInvokeError(
+            'Restart command not implemented.')
 
     @commands.command(name="prefix", help="Changes the command prefix of the bot.", brief="?")
     @commands.guild_only()
@@ -401,7 +404,8 @@ bot.add_cog(Internal(bot))
 
 # Run the bot with the API token pulled from the environment variable
 try:
-    bot.run(bot.config['token'], bot = True, reconnect = True)
+    bot.run(bot.config['token'], bot=True, reconnect=True)
 except discord.LoginFailure:
     print(f"Invalid {ENV_TOKEN} variable: {bot.config['token']}")
+    # Send message to Discord if an exception is raised
     input("Press enter to continue...")

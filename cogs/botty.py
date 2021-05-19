@@ -9,8 +9,8 @@ with their own commands, event listeners, and attributes.
 Botty Mc Botface's core functions: More to come!
 
 Authors: Joe Miller (@thatnerdjoe)
-Version: 0.
-Date: 03-20-2021
+Version: 0.3
+Date: 03-24-2021
 *******************************************************************************
 """
 

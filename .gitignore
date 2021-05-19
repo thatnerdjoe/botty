@@ -22,13 +22,10 @@
 !**/*.json
 # Unignore pipfile
 !requirements.txt
-
+# Unignore Dockerfile
+!Dockerfile
 
 ###
 # Ignore these specific directories
 ###
-# Pyvenv created directories
-lib/
-bin/
-lib64/
-include/
+
