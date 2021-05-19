@@ -20,15 +20,12 @@
 !**/*.py
 # Unignore JSON files
 !**/*.json
-# Ignore private token-containing config.json
-**/config.json
-
+# Unignore pipfile
+!requirements.txt
+# Unignore Dockerfile
+!Dockerfile
 
 ###
 # Ignore these specific directories
 ###
-# Pyvenv created directories
-lib/
-bin/
-lib64/
-include/
+
