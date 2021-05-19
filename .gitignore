@@ -20,8 +20,9 @@
 !**/*.py
 # Unignore JSON files
 !**/*.json
-# Unignore pipfile
+# Unignore requirements files
 !requirements.txt
+!Pipfile*
 # Unignore Dockerfile
 !Dockerfile
 
