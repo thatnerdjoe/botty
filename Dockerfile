@@ -22,4 +22,4 @@ ARG token=0
 ENV BASCOBOTTOKEN=$token
 
 # run program
-CMD ["python", "./bot.py", "&"]
+CMD ["python", "./bot.py"]
