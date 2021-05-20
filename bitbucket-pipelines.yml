@@ -1,0 +1,23 @@
+#  Template python-build
+
+#  This template allows you to validate your python code.
+#  The workflow allows running tests and code linting on the default branch.
+
+image: python:3.8
+
+options:
+  docker: true
+
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: Docker Build
+          deployment: production
+          caches:
+            - pip
+          script:
+            - export IMAGE_NAME=thatnerdjoe/botty.py:$BITBUCKET_COMMIT
+            - docker build -t $IMAGE_NAME
+            - docker login --username $DOCKER_USER --password $DOCKER_PASSS
+            - docker push $IMAGE_NAME
